@@ -1,0 +1,57 @@
+GPU Memory Track | 23-May-24-13:24:34 | Total Tensor Used Memory:0.0    Mb Total Allocated Memory:0.0    Mb
+
+
+At /home/jason/ECCV2022-RIFE/inference_img.py line 16: <module> Total Tensor Used Memory:0.0    Mb Total Allocated Memory:0.0    Mb
+
++ | 1 * Size:(128, 64, 3, 3)      | Memory: 0.2812 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 4 * Size:(5,)                 | Memory: 7.6293 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(1, 2, 128, 224)     | Memory: 0.2187 M | <class 'torch.Tensor'> | torch.float32
++ | 10 * Size:(32,)                | Memory: 0.0012 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(3, 1, 5, 5)         | Memory: 0.0002 M | <class 'torch.Tensor'> | torch.float32
++ | 4 * Size:(45,)                | Memory: 0.0006 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 16 * Size:(90, 90, 3, 3)       | Memory: 4.4494 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 2 * Size:(256, 256, 3, 3)     | Memory: 4.5 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(1, 2, 16, 28)       | Memory: 0.0034 M | <class 'torch.Tensor'> | torch.float32
++ | 2 * Size:(120,)               | Memory: 0.0009 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(64, 16, 4, 4)       | Memory: 0.0625 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(1, 2, 64, 112)      | Memory: 0.0546 M | <class 'torch.Tensor'> | torch.float32
++ | 1 * Size:(3,)                 | Memory: 1.1444 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(240, 120, 3, 3)     | Memory: 0.9887 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 10 * Size:(64,)                | Memory: 0.0024 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(3, 16, 3, 3)        | Memory: 0.0016 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(1, 2, 256, 448)     | Memory: 0.875 M | <class 'torch.Tensor'> | torch.float32
++ | 8 * Size:(150, 150, 3, 3)     | Memory: 6.1798 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 18 * Size:(150,)               | Memory: 0.0102 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 2 * Size:(1, 1, 3, 3)         | Memory: 6.8664 M | <class 'torch.Tensor'> | torch.float32
++ | 1 * Size:(32, 17, 3, 3)       | Memory: 0.0186 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(512, 128, 4, 4)     | Memory: 4.0 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(16, 3, 3, 3)        | Memory: 0.0016 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 3 * Size:(128, 128, 3, 3)     | Memory: 1.6875 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(128, 32, 4, 4)      | Memory: 0.25 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 2 * Size:(90, 5, 4, 4)        | Memory: 0.0549 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(32, 16, 3, 3)       | Memory: 0.0175 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(45, 17, 3, 3)       | Memory: 0.0262 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 2 * Size:(75,)                | Memory: 0.0005 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(120, 6, 3, 3)       | Memory: 0.0247 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(75, 17, 3, 3)       | Memory: 0.0437 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 3 * Size:(64, 64, 3, 3)       | Memory: 0.4218 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(150, 5, 4, 4)       | Memory: 0.0457 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 10 * Size:(128,)               | Memory: 0.0048 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 36 * Size:(90,)                | Memory: 0.0123 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 6 * Size:(16,)                | Memory: 0.0003 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 2 * Size:(90, 45, 3, 3)       | Memory: 0.2780 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(150, 75, 3, 3)      | Memory: 0.3862 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(1, 2, 32, 56)       | Memory: 0.0136 M | <class 'torch.Tensor'> | torch.float32
++ | 2 * Size:(32, 32, 3, 3)       | Memory: 0.0703 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(45, 20, 3, 3)       | Memory: 0.0308 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(256, 64, 4, 4)      | Memory: 1.0 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 18 * Size:(240,)               | Memory: 0.0164 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 3 * Size:(1, 3, 256, 448)     | Memory: 3.9375 M | <class 'torch.Tensor'> | torch.float32
++ | 4 * Size:(256,)               | Memory: 0.0039 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(64, 32, 3, 3)       | Memory: 0.0703 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(16, 16, 3, 3)       | Memory: 0.0087 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 8 * Size:(240, 240, 3, 3)     | Memory: 15.820 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
++ | 1 * Size:(240, 5, 4, 4)       | Memory: 0.0732 M | <class 'torch.nn.parameter.Parameter'> | torch.float32
+
+At /home/jason/ECCV2022-RIFE/inference_img.py line 130: <module> Total Tensor Used Memory:46.0   Mb Total Allocated Memory:47.0   Mb
+
