@@ -42,7 +42,7 @@ class Contextnet(nn.Module):
         self.conv4 = Conv2(4*c, 8*c)
     
     def forward(self, x, flow):
-        time_1=time.time()
+        # time_1=time.time()
         x = self.conv1(x)
         flow = F.interpolate(flow, scale_factor=0.5, mode="bilinear", align_corners=False, recompute_scale_factor=False) * 0.5
         f1 = warp(x, flow)        
@@ -55,9 +55,9 @@ class Contextnet(nn.Module):
         x = self.conv4(x)
         flow = F.interpolate(flow, scale_factor=0.5, mode="bilinear", align_corners=False, recompute_scale_factor=False) * 0.5
         f4 = warp(x, flow)
-        time_2=time.time()
+        # time_2=time.time()
         # print("通过Contextnet的时间:{}".format(time_2-time_1))
-        return [f1, f2, f3, f4]
+        return f1, f2, f3, f4
     
 class Unet(nn.Module):
     def __init__(self):
@@ -72,17 +72,18 @@ class Unet(nn.Module):
         self.up3 = deconv(4*c, c)
         self.conv = nn.Conv2d(c, 3, 3, 1, 1)
 
-    def forward(self, img0, img1, warped_img0, warped_img1, mask, flow, c0, c1):
-        time_1=time.time()
+    def forward(self, img0, img1, warped_img0, warped_img1, mask, flow, c01,c02, c03,c04, c11,c12,c13,c14):
+        # tmp = self.unet(img0, img1, warped_img0, warped_img1, mask, flow, c01,c02,c03,c04, c11,c12,c13,c14)
+        # time_1=time.time()
         s0 = self.down0(torch.cat((img0, img1, warped_img0, warped_img1, mask, flow), 1))
-        s1 = self.down1(torch.cat((s0, c0[0], c1[0]), 1))
-        s2 = self.down2(torch.cat((s1, c0[1], c1[1]), 1))
-        s3 = self.down3(torch.cat((s2, c0[2], c1[2]), 1))
-        x = self.up0(torch.cat((s3, c0[3], c1[3]), 1))
+        s1 = self.down1(torch.cat((s0, c01, c11), 1))
+        s2 = self.down2(torch.cat((s1, c02, c12), 1))
+        s3 = self.down3(torch.cat((s2, c03, c13), 1))
+        x = self.up0(torch.cat((s3, c04, c14), 1))
         x = self.up1(torch.cat((x, s2), 1)) 
         x = self.up2(torch.cat((x, s1), 1)) 
         x = self.up3(torch.cat((x, s0), 1)) 
         x = self.conv(x)
-        time_2=time.time()
-        # print("通过u-net的时间：{}".format(time_2-time_1))
+        # time_2=time.time()
+        # # print("通过u-net的时间：{}".format(time_2-time_1))
         return torch.sigmoid(x)#

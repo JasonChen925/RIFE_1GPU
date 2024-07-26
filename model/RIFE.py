@@ -6,12 +6,13 @@ import torch.optim as optim
 import itertools
 from model.warplayer import warp
 from torch.nn.parallel import DistributedDataParallel as DDP
-from model.IFNet import *
+from model.IFNet_1 import *
 from model.IFNet_m import *
 import torch.nn.functional as F
 from model.loss import *
 from model.laplacian import *
 from model.refine import *
+from torchstat import stat
 from torchsummary import summary
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 from memory_profiler import profile
@@ -27,7 +28,7 @@ class Model:
             # for param in params:
             #     num_params += torch.prod(torch.tensor(param.size()))
             # print('模型参数量:', num_params)
-            # summary(self.flownet,(3,256,256),device='cuda')
+            # summary(self.flownet,(6,256,448),device='cuda')
         self.device()
         self.optimG = AdamW(self.flownet.parameters(), lr=1e-6, weight_decay=1e-3) # use large weight decay may avoid NaN loss
         self.epe = EPE()
@@ -64,7 +65,18 @@ class Model:
         for i in range(3):
             scale_list[i] = scale_list[i] * 1.0 / scale
         imgs = torch.cat((img0, img1), 1)
-        flow, mask, merged, flow_teacher, merged_teacher, loss_distill = self.flownet(imgs, scale_list, timestep=timestep)
+        flow, mask, merged, flow_teacher, merged_teacher, loss_distill = self.flownet(imgs)
+
+        #检测所用计算量
+        # from ptflops import get_model_complexity_info
+        # flops, params = get_model_complexity_info(self.flownet, (6,544,960), as_strings=True, print_per_layer_stat=True)
+        # print('Flops:  ' + flops)
+        # print('Params: ' + params)
+
+        # a=torch.randn(6,544,960).to(device)
+        # stat(self.flownet, a.to(device))
+
+
         if TTA == False:
             return merged[2]
         else:

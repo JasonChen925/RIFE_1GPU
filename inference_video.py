@@ -10,13 +10,14 @@ import _thread
 import skvideo.io
 from queue import Queue, Empty
 from model.pytorch_msssim import ssim_matlab
+import time
 
 warnings.filterwarnings("ignore")
-
-def transferAudio(sourceVideo, targetVideo):
+time1=time.time()
+def transferAudio(sourceVideo, targetVideo):  #该代码用于将原视频的声音提取出来放到插]帧后的视频中
     import shutil
     import moviepy.editor
-    tempAudioFileName = "./temp/audio.mkv"
+    tempAudioFileName = "./temp/audio.mkv"  #定义音轨提取后存放的临时文件路径
 
     # split audio from original video file and store in "temp" directory
     if True:
@@ -110,26 +111,27 @@ except:
 model.eval()
 model.device()
 
-if not args.video is None:
-    videoCapture = cv2.VideoCapture(args.video)
-    fps = videoCapture.get(cv2.CAP_PROP_FPS)
-    tot_frame = videoCapture.get(cv2.CAP_PROP_FRAME_COUNT)
+if not args.video is None:#处理video
+    videoCapture = cv2.VideoCapture(args.video)#使用OpenCV的方法加载视频文件
+    fps = videoCapture.get(cv2.CAP_PROP_FPS)#获取帧率
+    tot_frame = videoCapture.get(cv2.CAP_PROP_FRAME_COUNT) #获取总帧数
     videoCapture.release()
-    if args.fps is None:
+    if args.fps is None: #未制定帧率
         fpsNotAssigned = True
         args.fps = fps * (2 ** args.exp)
     else:
         fpsNotAssigned = False
-    videogen = skvideo.io.vreader(args.video)
-    lastframe = next(videogen)
-    fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
+    videogen = skvideo.io.vreader(args.video)  #使用scikit-video的vreader创建一个生成器,用于逐帧读取视频
+    lastframe = next(videogen)#获取视频第一帧,将之存储在lastframe变量中
+    fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')  #设置视频编码格式为MP4
+    #输出路径和日志信息
     video_path_wo_ext, ext = os.path.splitext(args.video)
     print('{}.{}, {} frames in total, {}FPS to {}FPS'.format(video_path_wo_ext, args.ext, tot_frame, fps, args.fps))
     if args.png == False and fpsNotAssigned == True:
         print("The audio will be merged after interpolation process")
     else:
         print("Will not merge audio because using png or fps flag!")
-else:
+else:#处理图像
     videogen = []
     for f in os.listdir(args.img):
         if 'png' in f:
@@ -138,6 +140,7 @@ else:
     videogen.sort(key= lambda x:int(x[:-4]))
     lastframe = cv2.imread(os.path.join(args.img, videogen[0]), cv2.IMREAD_UNCHANGED)[:, :, ::-1].copy()
     videogen = videogen[1:]
+
 h, w, _ = lastframe.shape
 vid_out_name = None
 vid_out = None
@@ -147,9 +150,9 @@ if args.png:
 else:
     if args.output is not None:
         vid_out_name = args.output
-    else:
+    else:#输出视频
         vid_out_name = '{}_{}X_{}fps.{}'.format(video_path_wo_ext, (2 ** args.exp), int(np.round(args.fps)), args.ext)
-    vid_out = cv2.VideoWriter(vid_out_name, fourcc, args.fps, (w, h))
+    vid_out = cv2.VideoWriter(vid_out_name, fourcc, args.fps, (w, h))  #创建一个视频写入器对象,指定文件名\编码格式\新的帧率\帧的款和高
 
 def clear_write_buffer(user_args, write_buffer):
     cnt = 0
@@ -161,14 +164,14 @@ def clear_write_buffer(user_args, write_buffer):
             cv2.imwrite('vid_out/{:0>7d}.png'.format(cnt), item[:, :, ::-1])
             cnt += 1
         else:
-            vid_out.write(item[:, :, ::-1])
+            vid_out.write(item[:, :, ::-1]) #写入
 
-def build_read_buffer(user_args, read_buffer, videogen):
+def build_read_buffer(user_args, read_buffer, videogen):#用于从视频生成器或指定的图像文件中读取帧，并将这些帧存入到一个缓冲区（队列）
     try:
         for frame in videogen:
              if not user_args.img is None:
                   frame = cv2.imread(os.path.join(user_args.img, frame), cv2.IMREAD_UNCHANGED)[:, :, ::-1].copy()
-             if user_args.montage:
+             if user_args.montage:#是否需要拼接
                   frame = frame[:, left: left + w]
              read_buffer.put(frame)
     except:
@@ -200,12 +203,15 @@ tmp = max(32, int(32 / args.scale))
 ph = ((h - 1) // tmp + 1) * tmp
 pw = ((w - 1) // tmp + 1) * tmp
 padding = (0, pw - w, 0, ph - h)
-pbar = tqdm(total=tot_frame)
+pbar = tqdm(total=tot_frame)  #初始化进度条
 if args.montage:
     lastframe = lastframe[:, left: left + w]
+    #缓冲区初始化
 write_buffer = Queue(maxsize=500)
 read_buffer = Queue(maxsize=500)
+#在新线程中启动 build_read_buffer 函数，负责从 videogen 中读取帧并放入 read_buffer。
 _thread.start_new_thread(build_read_buffer, (args, read_buffer, videogen))
+#在另一个新线程中启动 clear_write_buffer 函数，负责从 write_buffer 中获取帧并进行写入处理。
 _thread.start_new_thread(clear_write_buffer, (args, write_buffer))
 
 I1 = torch.from_numpy(np.transpose(lastframe, (2,0,1))).to(device, non_blocking=True).unsqueeze(0).float() / 255.
@@ -221,27 +227,27 @@ while True:
     if frame is None:
         break
     I0 = I1
-    I1 = torch.from_numpy(np.transpose(frame, (2,0,1))).to(device, non_blocking=True).unsqueeze(0).float() / 255.
+    I1 = torch.from_numpy(np.transpose(frame, (2, 0, 1))).to(device, non_blocking=True).unsqueeze(0).float() / 255.
     I1 = pad_image(I1)
     I0_small = F.interpolate(I0, (32, 32), mode='bilinear', align_corners=False)
     I1_small = F.interpolate(I1, (32, 32), mode='bilinear', align_corners=False)
     ssim = ssim_matlab(I0_small[:, :3], I1_small[:, :3])
 
     break_flag = False
-    if ssim > 0.996:        
-        frame = read_buffer.get() # read a new frame
+    if ssim > 0.996:
+        frame = read_buffer.get()  # read a new frame
         if frame is None:
             break_flag = True
             frame = lastframe
         else:
             temp = frame
-        I1 = torch.from_numpy(np.transpose(frame, (2,0,1))).to(device, non_blocking=True).unsqueeze(0).float() / 255.
+        I1 = torch.from_numpy(np.transpose(frame, (2, 0, 1))).to(device, non_blocking=True).unsqueeze(0).float() / 255.
         I1 = pad_image(I1)
         I1 = model.inference(I0, I1, args.scale)
         I1_small = F.interpolate(I1, (32, 32), mode='bilinear', align_corners=False)
         ssim = ssim_matlab(I0_small[:, :3], I1_small[:, :3])
         frame = (I1[0] * 255).byte().cpu().numpy().transpose(1, 2, 0)[:h, :w]
-    
+
     if ssim < 0.2:
         output = []
         for i in range((2 ** args.exp) - 1):
@@ -256,7 +262,7 @@ while True:
             output.append(torch.from_numpy(np.transpose((cv2.addWeighted(frame[:, :, ::-1], alpha, lastframe[:, :, ::-1], beta, 0)[:, :, ::-1].copy()), (2,0,1))).to(device, non_blocking=True).unsqueeze(0).float() / 255.)
         '''
     else:
-        output = make_inference(I0, I1, 2**args.exp-1) if args.exp else []
+        output = make_inference(I0, I1, 2 ** args.exp - 1) if args.exp else []
 
     if args.montage:
         write_buffer.put(np.concatenate((lastframe, lastframe), 1))
@@ -278,7 +284,8 @@ if args.montage:
 else:
     write_buffer.put(lastframe)
 import time
-while(not write_buffer.empty()):
+
+while (not write_buffer.empty()):
     time.sleep(0.1)
 pbar.close()
 if not vid_out is None:
@@ -292,3 +299,5 @@ if args.png == False and fpsNotAssigned == True and not args.video is None:
         print("Audio transfer failed. Interpolated video will have no audio")
         targetNoAudio = os.path.splitext(vid_out_name)[0] + "_noaudio" + os.path.splitext(vid_out_name)[1]
         os.rename(targetNoAudio, vid_out_name)
+time2=time.time()
+print("所用时间为:{}".format(time2-time1))
